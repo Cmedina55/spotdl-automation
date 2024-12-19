@@ -3,16 +3,19 @@ import sys
 
 def download_song(spotify_url):
     try:
-        # Comando para descargar la canción con yt-dlp como backend
+        # Ejecutar el comando de descarga
         command = [
             "spotdl",
             "download",
             spotify_url
         ]
-        subprocess.run(command, check=True)
+        result = subprocess.run(command, check=True, text=True, capture_output=True)
+        print(result.stdout)  # Mostrar la salida de spotdl
         print("Canción descargada exitosamente.")
     except subprocess.CalledProcessError as e:
-        print(f"Error al descargar la canción: {e}")
+        # Capturar errores del comando
+        print("Error al descargar la canción:")
+        print(e.stderr)  # Mostrar errores de spotdl
         sys.exit(1)
 
 if __name__ == "__main__":
