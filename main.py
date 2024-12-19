@@ -3,12 +3,10 @@ import sys
 
 def download_song(spotify_url):
     try:
-        # Comando para descargar la canción con soporte de cookies dinámicas
+        # Comando para descargar la canción con yt-dlp como backend
         command = [
             "spotdl",
-            "--use-youtube",
-            "--cookies-from-browser",
-            "chrome",  # Cambia a tu navegador: 'firefox', 'edge', etc.
+            "download",
             spotify_url
         ]
         subprocess.run(command, check=True)
