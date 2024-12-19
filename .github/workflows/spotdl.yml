@@ -1,4 +1,4 @@
-name: SpotDL Download
+name: SpotDL Dynamic Download
 
 on:
   workflow_dispatch:
@@ -13,16 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
-      - name: Install SpotDL and FFmpeg
+      - name: Install Dependencies
         run: |
-          pip install spotdl
+          pip install --upgrade pip
+          pip install -r requirements.txt
           sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Download Track
         run: |
-          spotdl "${{ github.event.inputs.spotify_url }}"
+          python main.py "${{ github.event.inputs.spotify_url }}"
