@@ -1,38 +1,28 @@
-name: Music Downloader
+name: SpotDL Download
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      spotify_url:
+        description: "URL de Spotify del track"
+        required: true
+        default: "https://open.spotify.com/intl-es/track/7CkJfQByYyFdu9jRRXk858"
 
 jobs:
-  run-script:
+  download-spotify-track:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout el código fuente del repositorio
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Configurar Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
-      # Instalar dependencias
-      - name: Install dependencies
+      - name: Install SpotDL and FFmpeg
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install spotdl
+          sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      # Ejecutar el script
-      - name: Run script
+      - name: Download Track
         run: |
-          python main.py ${{ inputs.url }}
-        env:
-          PYTHONUNBUFFERED: 1
-
-    outputs:
-      download_status: ${{ steps.run-script.outcome }}
+          spotdl "${{ github.event.inputs.spotify_url }}"
