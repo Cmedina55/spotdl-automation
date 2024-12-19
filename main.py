@@ -1,44 +1,67 @@
-import subprocess
 import sys
+from spotdl import Spotdl
+from yt_dlp import YoutubeDL
+from spotdl.types.song import Song
+from spotdl.utils.search import get_youtube_link
+from spotdl.utils.ffmpeg import convert
 
-def download_with_cookies(track_url, browser="chrome"):
-    """
-    Descarga un video o canción utilizando yt-dlp con cookies desde el navegador.
+# Configuración de SpotDL
+spotdl_config = {
+    "output": "{artists} - {title}.{output-ext}",
+    "format": "mp3",
+    "overwrite": "skip",
+    "threads": 4,
+    "search_query": None,
+    "log_level": "DEBUG",
+}
 
-    Args:
-        track_url (str): URL del video o canción.
-        browser (str): Navegador a usar para las cookies ('chrome' o 'firefox').
+# Configuración de YT-DLP
+ytdlp_options = {
+    "format": "bestaudio/best",
+    "postprocessors": [{
+        "key": "FFmpegExtractAudio",
+        "preferredcodec": "mp3",
+        "preferredquality": "192",
+    }],
+    "quiet": False,
+    "progress_hooks": [lambda d: print(d.get("status", "Downloading..."))],
+}
 
-    Returns:
-        tuple: stdout, stderr de la ejecución del comando.
-    """
-    command = [
-        "yt-dlp",
-        "--cookies-from-browser", browser,
-        track_url
-    ]
 
-    print(f"Procesando la URL: {track_url}")
-    result = subprocess.run(
-        command,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
-    return result.stdout, result.stderr
+def download_with_spotdl(url):
+    try:
+        spotdl = Spotdl(spotdl_config)
+        song = Song.from_url(url)
+        print(f"Descargando: {song.name} de {', '.join(song.artists)}")
+        spotdl.download([song])
+        print("Descarga completada con SpotDL")
+    except Exception as e:
+        print(f"Error con SpotDL: {str(e)}")
+        download_with_ytdlp(url)
+
+
+def download_with_ytdlp(url):
+    try:
+        with YoutubeDL(ytdlp_options) as ytdl:
+            print(f"Descargando con YT-DLP: {url}")
+            ytdl.download([url])
+            print("Descarga completada con YT-DLP")
+    except Exception as e:
+        print(f"Error con YT-DLP: {str(e)}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Uso: python main.py <URL> [navegador]")
+    if len(sys.argv) != 2:
+        print("Uso: python main.py <URL>")
         sys.exit(1)
 
-    track_url = sys.argv[1]
-    browser = sys.argv[2] if len(sys.argv) > 2 else "chrome"
+    url = sys.argv[1]
 
-    stdout, stderr = download_with_cookies(track_url, browser)
+    print(f"Procesando la URL: {url}")
 
-    print("==== Salida del Comando ====")
-    print(stdout)
-    print("==== Errores (si los hay) ====")
-    print(stderr)
+    if "spotify" in url:
+        download_with_spotdl(url)
+    elif "youtube" in url:
+        download_with_ytdlp(url)
+    else:
+        print("Plataforma no soportada. Usa una URL de Spotify o YouTube.")
