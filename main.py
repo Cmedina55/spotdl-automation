@@ -1,4 +1,3 @@
-import os
 import subprocess
 
 def download_track(track_url):
@@ -6,11 +5,12 @@ def download_track(track_url):
     Descarga una canción desde Spotify utilizando spotdl.
     """
     try:
-        # Ejecutar el comando spotdl con detalles adicionales
-        subprocess.run(["spotdl", "--debug-logs", track_url], check=True)
+        # Ejecutar el comando spotdl con la URL proporcionada
+        subprocess.run(["spotdl", track_url], check=True)
         print(f"Descarga completada para: {track_url}")
     except subprocess.CalledProcessError as e:
         print(f"Error al descargar la canción: {e}")
+        print(e.stderr)
 
 if __name__ == "__main__":
     # URL de la canción en Spotify
