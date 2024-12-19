@@ -30,7 +30,7 @@ def download_with_cookies(track_url, browser="chrome"):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Uso: python main.py <URL>")
+        print("Uso: python main.py <URL> [navegador]")
         sys.exit(1)
 
     track_url = sys.argv[1]
