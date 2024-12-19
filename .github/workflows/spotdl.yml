@@ -1,35 +1,25 @@
-name: SpotDL Automation
+name: Spotify Download
 
-on:
-  workflow_dispatch:
+on: [push]
 
 jobs:
-  download-song:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.x'
 
     - name: Install dependencies
       run: |
+        pip install -r requirements.txt
         sudo apt-get update
         sudo apt-get install -y ffmpeg
-        pip install spotdl
 
-    - name: Create output directory
-      run: mkdir -p downloads
-
-    - name: Run SpotDL script
-      run: python main.py "https://open.spotify.com/intl-es/track/7CkJfQByYyFdu9jRRXk858"
-
-    - name: Upload downloaded songs
-      uses: actions/upload-artifact@v3
-      with:
-        name: downloaded-songs
-        path: downloads/
+    - name: Run script
+      run: python main.py
