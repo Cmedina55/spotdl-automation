@@ -1,4 +1,4 @@
-name: SpotDL Dynamic Download
+name: SpotDL Download Workflow
 
 on:
   workflow_dispatch:
