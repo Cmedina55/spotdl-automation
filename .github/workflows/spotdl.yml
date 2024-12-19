@@ -1,30 +1,25 @@
-name: Download Music with yt-dlp
+name: Music Downloader
 
 on:
   workflow_dispatch:
-    inputs:
-      track_url:
-        description: "URL de la canción o video a descargar"
-        required: true
-      browser:
-        description: "Navegador para cookies (chrome o firefox)"
-        required: false
-        default: "chrome"
+  push:
+    branches:
+      - main
 
 jobs:
-  download:
+  run-script:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout del repositorio
+      # Checkout el código fuente del repositorio
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Configuración de Python
-      - name: Setup Python
+      # Configurar Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: 3.9
 
       # Instalar dependencias
       - name: Install dependencies
@@ -33,6 +28,11 @@ jobs:
           pip install -r requirements.txt
 
       # Ejecutar el script
-      - name: Run yt-dlp script
+      - name: Run script
         run: |
-          python main.py "${{ github.event.inputs.track_url }}" "${{ github.event.inputs.browser }}"
+          python main.py ${{ inputs.url }}
+        env:
+          PYTHONUNBUFFERED: 1
+
+    outputs:
+      download_status: ${{ steps.run-script.outcome }}
