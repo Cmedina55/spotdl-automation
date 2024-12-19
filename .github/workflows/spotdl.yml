@@ -1,38 +1,38 @@
-name: Spotify Track Downloader
+name: Download Music with yt-dlp
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      track_url:
+        description: "URL de la canción o video a descargar"
+        required: true
+      browser:
+        description: "Navegador para cookies (chrome o firefox)"
+        required: false
+        default: "chrome"
 
 jobs:
-  download-spotify-track:
+  download:
     runs-on: ubuntu-latest
 
     steps:
-    # Verificar el repositorio
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # Checkout del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Configurar Python
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      # Configuración de Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
 
-    # Instalar dependencias
-    - name: Install dependencies
-      run: |
-        pip install --upgrade pip
-        pip install -r requirements.txt
-        sudo apt-get update
-        sudo apt-get install -y ffmpeg
+      # Instalar dependencias
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    # Actualizar yt-dlp (por si hay problemas con la versión actual)
-    - name: Update yt-dlp
-      run: pip install --upgrade yt-dlp
-
-    # Ejecutar el script
-    - name: Run Spotify Track Downloader
-      run: python main.py
+      # Ejecutar el script
+      - name: Run yt-dlp script
+        run: |
+          python main.py "${{ github.event.inputs.track_url }}" "${{ github.event.inputs.browser }}"
