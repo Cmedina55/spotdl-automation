@@ -23,4 +23,13 @@ jobs:
         pip install -U yt-dlp  # Actualiza yt-dlp
 
     - name: Run script
-      run: python main.py
+      run: |
+        set -o pipefail
+        python main.py 2>&1 | tee error_log.txt
+
+    - name: Upload error log
+      if: failure()
+      uses: actions/upload-artifact@v2
+      with:
+        name: error-log
+        path: error_log.txt
