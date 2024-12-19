@@ -1,3 +1,5 @@
-spotdl
-ffmpeg
-yt-dlp
+spotdl>=4.1.0
+yt-dlp>=2024.12.13
+pytube>=15.0.0
+mutagen>=1.45.1
+ffmpeg-python>=0.2.0
